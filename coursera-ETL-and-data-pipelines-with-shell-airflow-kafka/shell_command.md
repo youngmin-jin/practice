@@ -12,3 +12,8 @@
   - tr -d : delete characters
     > ![image](https://github.com/youngmin-jin/exercise/assets/135728064/b2314d6c-cb87-4913-9226-47edb9431143)
 
+- touch file.sh : create a shell script file
+- gedit file.sh : open the file
+- chmod +x file.sh : set permissions to make the shell script executable
+- crontab -e : open crontab editor
+- 1****path/file.sh : enter schedule
