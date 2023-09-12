@@ -14,7 +14,15 @@
   
 - Data pipelines 
   - Batch
-    - Apache Airflow (with DAG)
+    - Apache Airflow: represents your batch workflow as a directed acyclic graph (DAG)
+      ![image](https://github.com/youngmin-jin/exercise/assets/135728064/844dab74-0015-430b-8336-2a4277ae7017)
+
   - Streaming
     - Apache Kafka
 
+# ETL shell script using cron
+- touch file.sh : create a shell script file
+- gedit file.sh : open the file
+- chmod +x file.sh : set permissions to make the shell script executable
+- crontab -e : open crontab editor
+- 1****path/file.sh : enter schedule
