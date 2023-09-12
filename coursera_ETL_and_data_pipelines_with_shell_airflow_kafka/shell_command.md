@@ -1,4 +1,7 @@
 # basic shell command
+- cat : verify that the file is created
+  > cat extract-data.txt 
+  
 - cut : extract the first ~ four characters
   > ![image](https://github.com/youngmin-jin/exercise/assets/135728064/fd45d869-d49f-4484-9eea-831158c49556)
 
