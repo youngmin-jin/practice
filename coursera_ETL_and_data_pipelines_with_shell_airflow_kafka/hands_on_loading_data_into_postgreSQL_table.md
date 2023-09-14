@@ -21,7 +21,7 @@
     > echo "Transforming data" <br />
     > tr ":" "," < extract-data.txt > transformed-data.csv <br />
     > echo "Loading data" <br />
-    > echo "\c template1;\COPY users FROM /home/project/transformed-data.csv DELIMITERS ',' CSV;" | psql --username=postgres --host=localhost
+    > echo "\c template1;\COPY users FROM /home/project/transformed-data.csv DELIMITERS ',' CSV;" | psql --username=postgres --host=localhost <br />
 *if CSV files have a header, then "CSV HEADER;" 
 
 2. run bash file <br />
