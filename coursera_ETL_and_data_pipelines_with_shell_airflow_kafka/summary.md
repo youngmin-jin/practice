@@ -17,18 +17,14 @@
 # Data pipeline
 - includes scheduling, triggering, monitoring (tracking latency, throughput, resource utilization..), maintenance, and optimization
 - data flows through pipelines as a series of data packets
-- latency and thoughput are kig design considerations for data pipelines/ therefore, parallelization and I/O buffers can help mitigate bottlenecks
+- latency and thoughput are kig design considerations for data pipelines/ therefore, parallelization and I/O buffers can help mitigate bottlenecks<br/>
   ![image](https://github.com/youngmin-jin/exercise/assets/135728064/0ab9e89e-34c5-40ac-b34c-7370dd4240e0)
 
 <br/>
 
 - types
 1. Batch
-   - Apache Airflow:
-    ![image](https://github.com/youngmin-jin/exercise/assets/135728064/844dab74-0015-430b-8336-2a4277ae7017)
-      - versatile 'configuration' as code data pipeline platform
-      - allows users to programmatically author, schedule, and monitor big data workflow
-      - represents your batch workflow as a directed acyclic graph (DAG) <br/>
+   - Apache Airflow
    - usually run periodically like hours, days, weeks..
    - when latest data is not needed/ accuracy is critical
    - data cleaning improves quality but increases latency
@@ -42,7 +38,7 @@
 <br/>
 
 3. lambda architecture
-   - combines batch and streaming data pipeline methods
+   - combines batch and streaming data pipeline methods<br/>
      ![image](https://github.com/youngmin-jin/exercise/assets/135728064/0e18bf55-f5df-413a-8c59-0a1250f78d00)
 
    - historical data -> delivered in batches/ real-time data -> speed layer => these are integrated in the serving layer
@@ -58,6 +54,39 @@
   - enterprise
     - AWS Glue: fully managed ETL service that simplifies data prep for analytics/ crawls your data sources and discovers data formats/ suggests schemas for storing the data/ create ETL jobs from the AWS console
     - Panoply: ELT-specific platform/ no-code integration/ SQL-based view
+<br/>
+
+
+# Apache Airflow 
+  ![image](https://github.com/youngmin-jin/exercise/assets/135728064/844dab74-0015-430b-8336-2a4277ae7017)
+  - primarily a workflow manager
+  - allows users to programmatically author, schedule, and monitor big data workflow/ but not for streaming solution
+  - makes data pipelines more maintanable, testable, and collaborative/ e.g., version management
+  - architecture<br/>
+    ![image](https://github.com/youngmin-jin/exercise/assets/135728064/f6863c58-90ce-421e-bc78-9999e3f8522d)<br/><br/>
+  
+  - DAG
+    - represents workflows or pipelines/ define what tasks should run
+    - nodes are tasks/ edges define the order in which the two tasks should run
+    - configuration
+      - tasks are written in pyhthon
+      - tasks implement operators e.g., python, sql, or bash operator
+      - sensor operators poll for a certain time or condition (e.g., check every 30s whether a file exists)/ other operators such as email or HTTP request can be used
+      - library imports-> DAG arguments-> DAG definition-> task definitions-> task pipeline
+        ![image](https://github.com/youngmin-jin/exercise/assets/135728064/a1983533-3ef7-4c8b-bcde-a31b6c9650cc) 
+        ![image](https://github.com/youngmin-jin/exercise/assets/135728064/bd50bbf1-1e7f-4877-8d7b-bb8018a11781)<br/><br/>
+    
+    *dashboard of Airflow
+    ![image](https://github.com/youngmin-jin/exercise/assets/135728064/5c7dc5e2-afbb-48cb-aae7-fe9f42286d6f)<br/><br/>
+    *tree view of DAG
+    ![image](https://github.com/youngmin-jin/exercise/assets/135728064/ba174be2-3cc5-4bbd-9862-055098c0ab32)<br/><br/>
+    *graph view of DAG
+    ![image](https://github.com/youngmin-jin/exercise/assets/135728064/491d6bd5-f108-47ea-99e0-34971cc6e64b)<br/><br/>
+        
+  - Airflow scheduler
+    - schedules and deployes your DAGs
+    - deploys on worker array-> follows your DAG-> set the first DAG run-> subsequent run 
+      
 
 
 
