@@ -76,11 +76,11 @@
         ![image](https://github.com/youngmin-jin/exercise/assets/135728064/a1983533-3ef7-4c8b-bcde-a31b6c9650cc) 
         ![image](https://github.com/youngmin-jin/exercise/assets/135728064/bd50bbf1-1e7f-4877-8d7b-bb8018a11781)<br/><br/>
     
-    *dashboard of Airflow
+    *dashboard of Airflow<br/>
     ![image](https://github.com/youngmin-jin/exercise/assets/135728064/5c7dc5e2-afbb-48cb-aae7-fe9f42286d6f)<br/><br/>
-    *tree view of DAG
+    *tree view of DAG<br/>
     ![image](https://github.com/youngmin-jin/exercise/assets/135728064/ba174be2-3cc5-4bbd-9862-055098c0ab32)<br/><br/>
-    *graph view of DAG
+    *graph view of DAG<br/>
     ![image](https://github.com/youngmin-jin/exercise/assets/135728064/491d6bd5-f108-47ea-99e0-34971cc6e64b)<br/><br/>
         
   - Airflow scheduler
