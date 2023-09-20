@@ -17,11 +17,13 @@
   > airflow dags pause DAGnamehere<br/>
 <br/>
 
+
 # Building a DAG example
+**download log file, extract, transform, and compress as a zip file**
   - connect to Airflow<br/>
     > start_airflow
 
-  - create a DAG py file (my_first_dag.py) 
+  - create a DAG py file (ETL_Server_Access_Log_Processing.py ) 
     ```
     # import libraries
     from datetime import timedelta
@@ -42,38 +44,49 @@
     
     # DAG
     dag = DAG(
-        'my-first-dag'
+        'ETL_Server_Access_Log_Processing'
         , default_args=default_args
-        , description='My first DAG'
+        , description='ETL_Server_Access_Log_Processing'
         , schedule_interval=timedelta(days=1)
     )
     
     # tasks
-    extract = BashOperator(
-        task_id='extract'
-        , bash_command='cud -d":" -f1,3,6 /etc/passwd > /home/project/airflow/dags/extracted-data.txt'
+    download = BashOperator(
+        task_id='download'
+        , bash_command='wget -o web-server-access-log.txt "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Apache%20Airflow/Build%20a%20DAG%20using%20Airflow/web-server-access-log.txt"'
         , dag=dag
     )
-    transform_and_load = BashOperator(
+    extract = BashOperator(
+        task_id='extract'
+        , bash_command='cut -d"#" -f1,4 web-server-access-log.txt > /home/project/airflow/dags/extracted_data.txt'
+        , dag=dag
+    )
+    transform = BashOperator(
         task_id='transform'
-        , bash_command='tr ":" "," < /home/project/airflow/dags/extracted_data.txt > /home/project/airflow/dags/transformed_data.csv'
+        , bash_command='tr "[a-z]" "[A-Z]" < /home/project/airflow/dags/extracted_data.txt > /home/project/airflow/dags/transformed_data.txt'  # capitalize letter
+        , dag=dag
+    )
+    load = BashOperator(
+        task_id='load'
+        , bash_command='zip log.zip transformed_data.txt'
         , dag=dag
     )
     
     # task pipeline
-    extract >> transform_and_load
+    download >> extract >> transform >> load
     ```
 
   - submit a DAG<br/>
-    > cp my_first_dag.py $AIRFLOW_HOME/dags<br/>
+    > cp ETL_Server_Access_Log_Processing.py $AIRFLOW_HOME/dags<br/>
    
   - verify dags list and tasks list<br/>
     > airflow dags list<br/>
-    > airflow dags list|grep "my-first-dag"<br/>
-    > airflow tasks list my-first-dag<br/>
+    > airflow dags list|grep "ETL_Server_Access_Log_Processing"<br/>
+    > airflow tasks list ETL_Server_Access_Log_Processing<br/>
 
   - results<br/>
-    ![image](https://github.com/youngmin-jin/exercise/assets/135728064/7fc6c4b3-4c60-4699-8a6a-71d2471efaba)
+    ![image](https://github.com/youngmin-jin/exercise/assets/135728064/4139c3ac-d680-40d8-b792-4fe5f67a1f3c)
+
 
 
 
