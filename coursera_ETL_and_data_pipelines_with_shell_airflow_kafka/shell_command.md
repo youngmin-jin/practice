@@ -6,7 +6,7 @@
   > ![image](https://github.com/youngmin-jin/exercise/assets/135728064/fd45d869-d49f-4484-9eea-831158c49556)
 
 - d : delimeter
-- f : filed number
+- f : columns divided by delimeter
   > ![image](https://github.com/youngmin-jin/exercise/assets/135728064/f9975037-31a8-464e-84ae-db4e02e00c9d)
 
 - tr : transform the data
