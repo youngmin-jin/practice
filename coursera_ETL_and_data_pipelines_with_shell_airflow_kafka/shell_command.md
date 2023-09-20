@@ -16,6 +16,8 @@
     > ![image](https://github.com/youngmin-jin/exercise/assets/135728064/b2314d6c-cb87-4913-9226-47edb9431143)
 
 - wget : downlaod files
-  > wget "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/ETL%20using%20shell%20scripting/web-server-access-log.txt.gz"
+  - -o : set file name
+    > wget -O web-server-access-log.txt.gz "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/ETL%20using%20shell%20scripting/web-server-access-log.txt.gz"
+  
 - gunzip : unzip the file
   > gunzip -f web-server-access-log.txt.gz
