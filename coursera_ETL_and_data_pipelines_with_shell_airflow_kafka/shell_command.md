@@ -20,3 +20,7 @@
 - chmod +x file.sh : set permissions to make the shell script executable
 - crontab -e : open crontab editor
 - 1****path/file.sh : enter schedule
+- wget : downlaod files
+  > wget "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/ETL%20using%20shell%20scripting/web-server-access-log.txt.gz"
+- gunzip : unzip the file
+  > gunzip -f web-server-access-log.txt.gz
