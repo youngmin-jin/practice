@@ -84,7 +84,7 @@
     > airflow dags list|grep "ETL_Server_Access_Log_Processing"<br/>
     > airflow tasks list ETL_Server_Access_Log_Processing<br/>
 
-  - results<br/>
+  - in the Airflow UI<br/>
     ![image](https://github.com/youngmin-jin/exercise/assets/135728064/4139c3ac-d680-40d8-b792-4fe5f67a1f3c)
 
 
