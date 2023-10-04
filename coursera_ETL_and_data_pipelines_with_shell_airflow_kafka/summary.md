@@ -59,7 +59,7 @@
 
 # Apache Airflow 
   ![image](https://github.com/youngmin-jin/exercise/assets/135728064/844dab74-0015-430b-8336-2a4277ae7017)
-  - primarily a workflow manager
+  - primarily a workflow manager/ defines and organizes machine learning pipeline dependencies
   - allows users to programmatically author, schedule, and monitor big data workflow/ but not for streaming solution
   - makes data pipelines more maintanable, testable, and collaborative/ e.g., version management
   - architecture<br/>
