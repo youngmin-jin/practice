@@ -23,7 +23,8 @@
    > cd kafka_2.12-2.8.0 <br/>
    > bin/kafka-console-consumer.sh --topic news --from-beginning --bootstrap-server localhost:9092 <br/><br/>
    > *can see the msg sent from the producer in real time <br/>
-   > ![image](https://github.com/youngmin-jin/practice/assets/135728064/388dd58c-d619-4990-a9e8-c21e0eb9e800)
+   > ![image](https://github.com/youngmin-jin/practice/assets/135728064/388dd58c-d619-4990-a9e8-c21e0eb9e800) <br/><br/>
+   > *if --from-beginning does not exist, the consumer only receives the msg after the connection 
 
 - directory
   - bin: shell scripts to control kafka and zookeeper
