@@ -24,7 +24,7 @@
 
 - types
 1. Batch
-   - Apache Airflow
+   - _Apache Airflow_
    - usually run periodically like hours, days, weeks..
    - when latest data is not needed/ accuracy is critical
    - data cleaning improves quality but increases latency
@@ -32,7 +32,7 @@
 <br/>
 
 2. Streaming
-   - Apache Kafka
+   - _Apache Kafka_
    - ingest data packets in rapid succession/ for real-time results/ records processed as they happen/ event streams can be loaded to storage
    - e.g., watching streaming services, social media feeds, fraud detection..
 <br/>
@@ -85,7 +85,61 @@
         
   - Airflow scheduler
     - schedules and deployes your DAGs
-    - deploys on worker array-> follows your DAG-> set the first DAG run-> subsequent run 
+    - deploys on worker array-> follows your DAG-> set the first DAG run-> subsequent run <br/><br/><br/>
+
+
+# Apache Kafka
+  - One of ESP solutions (Event Streaming Platform) <br/><br/>
+    *ESP: manage event streaming from various event sources (e.g., sensors, devices..) to destinations 
+    > ![image](https://github.com/youngmin-jin/practice/assets/135728064/479717fa-3769-4efa-8462-8e82f49128ac)
+    > ![image](https://github.com/youngmin-jin/practice/assets/135728064/97acf642-6fed-447d-b5ab-a87f0a3f41bc) <br/>
+    > e.g., Apache Kafka, Amazon Kinesis, Apache Storm.. <br/><br/>
+
+  - distribution system-> able to handle high data throughput and concurrency in parallel/ scalable/ permanent persistency/ open source
+  - originally used to track user activities (e.g., keyboard strokes, click, page view..) but now used for all kinds of metric-streaming (e.g., sensor reading, GPS, hardward or software monitoring, log..)
+  - all events are ingested in Kafka, and become available for destinations (e.g., further data storage, online or offline databases, real-time analytics such as dashboard, ML..)
+
+  - architecture
+    > ![image](https://github.com/youngmin-jin/practice/assets/135728064/e1d2947f-db2c-4eb4-ab41-4aa98ffc727f) <br/><br/>
+    > *core components
+    > ![image](https://github.com/youngmin-jin/practice/assets/135728064/1618c721-e923-40ce-8880-2246bba8f282) <br/><br/>
+    > *brokers are dedicated server to receive, store, process and distribute events/ synchronized and managed by another dedicated server called ZooKeeper <br/>
+    > *different types of clients, such as Kafka CLI or API using Java, Python, are available <br/>
+
+    - Kafka producer
+      > ![image](https://github.com/youngmin-jin/practice/assets/135728064/f9d5fc0d-05a6-4383-ae63-f1fccd4500ab)<br/>
+        - e.g., create kafka producers to publish e.g., log/ user-activities events to log/ user-activities topic partitions (optinally with associated events, like user id)
+          > *kafka producer creation CLI <br/>
+          > ![image](https://github.com/youngmin-jin/practice/assets/135728064/3b74c209-a824-4f75-b206-3ad5b4dfad38) <br/>
+
+    - Kafka consumer
+      > ![image](https://github.com/youngmin-jin/practice/assets/135728064/cf6bae5b-1aae-497a-a660-02dd6b53a81b) <br/>
+      - e.g., make kafka consumers-> make them subscribe corresponding topics-> kafka push the events to the subscribed consumers-> consumers send to event destinations
+        > *kafka consumer creation CLI <br/>
+        > ![image](https://github.com/youngmin-jin/practice/assets/135728064/04f3789d-971b-4b1e-87ad-bf85f664df35) <br/>
+
+  - example of streaming processing using kafka (with other data processors)
+    > ![image](https://github.com/youngmin-jin/practice/assets/135728064/3fcc1097-9743-4b6b-aaf0-39cc5c7fa51e) <br/>
+    1) request raw weather json data from a weather API
+    2) start a weather producer to publish the raw data to a raw weather topic
+    3) start a consumer to read the raw weather data from the weather topic
+    4) create an ad hoc data processor to filter the raw weather data to only filter extreme events (e.g., extremely high or low temp) -> **Kafka Streams API** can replace
+    5) the processor sends the processed data to another producer, and publishes to a processed weather topic
+    6) the processed weather data is consumed by dedicated consumer and sent to a dashboard for visu <br/><br/>
+
+    - Kafka Streams API
+      - simple client library supporting users with data processing in event streaming pipelines
+      - processes and analyzes data stored in kafka topics
+      - example of streaming processing using kafka (with Kafka Streams API)
+        > ![image](https://github.com/youngmin-jin/practice/assets/135728064/b6225172-7cfc-4250-b5a1-cec75f24d60f) <br/>
+        > *iv. step can be replaced by kafka streams api
+
+
+
+
+
+
+    
       
 
 
