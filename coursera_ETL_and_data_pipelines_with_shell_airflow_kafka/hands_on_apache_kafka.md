@@ -1,4 +1,4 @@
-# Send and receive messages from the streaming sources using Apache Kafka
+# Send and receive messages from streaming sources using Apache Kafka
 1. download kafka and extract kafka from the zip file creating a new directory 'kafka_2.12-2.8.0'
    > wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.12-2.8.0.tgz 
 
