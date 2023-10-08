@@ -61,7 +61,7 @@
 - directory
   - bin: shell scripts to control kafka and zookeeper
   - config: configuration files
-  - logs: log files for kafka and zookeeper/ _msgs are stored here_ <br/>
+  - logs: log files for kafka and zookeeper/ _msgs are stored here_ <br/><br/>
 
 - how to use kafka in python
-  - refer to coursera_ETL_and_data_pipelines_with_shell_airflow_kafka/Kafka Python Client.pdf  
+  - refer to Kafka Python Client.pdf  
