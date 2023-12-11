@@ -21,7 +21,7 @@
   WITH offset AS offset
   ORDER BY offset;
   ```
-  <img width="248" alt="image" src="https://github.com/youngmin-jin/practice/assets/135728064/aa8a990b-cdf8-44ed-894a-aa18b5acb5e8"><br/>
+  <img width="248" alt="image" src="https://github.com/youngmin-jin/practice/assets/135728064/aa8a990b-cdf8-44ed-894a-aa18b5acb5e8"><br/><br/>
 
 - UNNEST
   ```
