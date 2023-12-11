@@ -12,6 +12,6 @@
     SELECT some_numbers, ARRAY_LENGTH(some_numbers) AS len
     FROM Sequences;
     ```
-    <img width="174" alt="image" src="https://github.com/youngmin-jin/practice/assets/135728064/7bd6d355-8173-4171-a1d3-628e4e97840d">
-
+    <img width="174" alt="image" src="https://github.com/youngmin-jin/practice/assets/135728064/7bd6d355-8173-4171-a1d3-628e4e97840d"><br/>
+    ref: https://cloud.google.com/bigquery/docs/arrays?hl=ja
 
