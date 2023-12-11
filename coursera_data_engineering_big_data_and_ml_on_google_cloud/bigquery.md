@@ -23,4 +23,20 @@
   ```
   <img width="248" alt="image" src="https://github.com/youngmin-jin/practice/assets/135728064/aa8a990b-cdf8-44ed-894a-aa18b5acb5e8"><br/>
 
+- UNNEST
+  ```
+  SELECT 
+    p.v2ProductName
+    , p.v2ProductCategory
+    , SUM(p.productQuantity) AS units_sold
+    , ROUND(SUM(p.localProductRevenue), 2) AS revenue
+  FROM 
+    `data-to-insights.ecommerce.web_analytics`
+    , UNNEST(hits) AS h
+    , UNNEST(product) AS p
+  GROUP BY p.v2ProductName, p.v2ProductCategory
+  ORDER BY revenue DESC
+  LIMIT 5
+  ```
+  *if the column is nested within another column
   
