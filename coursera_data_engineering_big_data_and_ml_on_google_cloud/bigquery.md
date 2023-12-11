@@ -1,6 +1,5 @@
 # SQL queries
-- ARRAY
-  : it is possible to run ARRAY functions in BigQuery
+- ARRAY: it is possible to run ARRAY functions in BigQuery
 
   - ARRAY_LENGTH
     ```
@@ -13,5 +12,15 @@
     FROM Sequences;
     ```
     <img width="174" alt="image" src="https://github.com/youngmin-jin/practice/assets/135728064/7bd6d355-8173-4171-a1d3-628e4e97840d"><br/>
-    ref: https://cloud.google.com/bigquery/docs/arrays?hl=ja
+    ref: https://cloud.google.com/bigquery/docs/arrays?hl=ja<br/><br/>
 
+- OFFSET: add index
+  ```
+  SELECT *
+  FROM UNNEST(['foo','sdfd','ss','dfd']) AS element
+  WITH offset AS offset
+  ORDER BY offset;
+  ```
+  <img width="248" alt="image" src="https://github.com/youngmin-jin/practice/assets/135728064/aa8a990b-cdf8-44ed-894a-aa18b5acb5e8"><br/>
+
+  
