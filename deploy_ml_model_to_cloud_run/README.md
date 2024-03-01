@@ -34,9 +34,9 @@ Ref: https://github.com/patrickloeber/ml-deployment/tree/main/google-cloud-run
 - [requirements.txt](https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/requirements.txt, "requirements.txt")
 - [.dockerignore](https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/.dockerignore, ".dockerignore") <br/><br/>
 
-- Open GCP cloud shell and make an alignment like below
-   -> train.py, test.py, and load.py files in the test folder
-   -> Dockerfile, requirements.txt, .dockerignore, main.py, encoder, and model in the google-deploy folder
+- Open GCP cloud shell and make an alignment like below <br/>
+   -> train.py, test.py, and load.py files in the test folder <br/>
+   -> Dockerfile, requirements.txt, .dockerignore, main.py, encoder, and model in the google-deploy folder <br/>
     > ![image](https://github.com/youngmin-jin/practice/assets/135728064/e2bcf68f-f31e-408a-a2a7-37b39de3afbb) 
 
 ## Cloud Build and Deploy
