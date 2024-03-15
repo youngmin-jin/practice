@@ -1,11 +1,13 @@
 # Network Protocol
 - mechanism or a set of procedures that enables devices to communicate back and forth across the internet
 - in order to communicate together, two devices must support the same protocol or a gateway will be needed to translate the communication
+<br/>
 
 ### Network management protocols
 - designed to help manage and troubleshoot performance
 - set out policies designed to monitor, manage, and maintain a network
 - e.g., SNMP, FTP, POP3..
+<br/>
 
 ### Network communication protocols
 - designed to enable two devices to exchange data
@@ -20,7 +22,7 @@
   > HTTP (Hypertext Transfer Protocol)
   >  - enables systems to communicate on the World Wide Web
   >  - a client will send a hypertext msg request to a web server asking for access to the resources needed to load a web page
-
+<br/>
 
 ### Network security protocols
 - use security measures (e.g., cryptography, encryption) to protect data
@@ -29,3 +31,4 @@
   >  - encrypted version of HTTP
   >  - uses SSL/TLS encryption to encrypt requests and responses so not accessed by third parties
   >  - e.g., REQUEST, RESPONSE
+<br/>
