@@ -24,7 +24,8 @@
 
 ### Network security protocols
 - use security measures (e.g., cryptography, encryption) to protect data
-- e.g., HTTPS, SFTP, SSL.. 
+- e.g., HTTPS, SFTP, SSL.. <br/><br/>
   > HTTPS
   >  - encrypted version of HTTP
   >  - uses SSL/TLS encryption to encrypt requests and responses so not accessed by third parties
+  >  - e.g., REQUEST, RESPONSE
