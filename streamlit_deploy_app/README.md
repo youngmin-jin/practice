@@ -26,6 +26,6 @@ https://docs.streamlit.io/knowledge-base/tutorials/databases/snowflake#add-conne
 <br/><br/>
 
 ## 5. Check your app is deployed
-![image](https://github.com/youngmin-jin/practice/assets/135728064/23a97eda-df76-40be-938f-448b50f6c667)
-
+![image](https://github.com/youngmin-jin/practice/assets/135728064/23a97eda-df76-40be-938f-448b50f6c667) <br/>
+-> Data will be added to Snowflake
 
