@@ -40,8 +40,9 @@
 
 ### - Not only data, but SQL functions are available to share
 ![image](https://github.com/youngmin-jin/practice/assets/135728064/0f1e7aad-5941-4bd6-b0ea-0e4be4c10e92)
-<br/><br/><br/>
+<br/><br/>
 
+*possible to share functions and necessary data without data exposure.
 
 
 
