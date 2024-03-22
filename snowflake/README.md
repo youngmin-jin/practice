@@ -68,11 +68,9 @@
 > &nbsp;&nbsp;&nbsp;&nbsp;, $1 AS WHOLE_OBJECT <br/>
 > &nbsp;&nbsp;FROM @TRAILS_GEOJSON <br/>
 > &nbsp;&nbsp;(FILE_FORMAT => FF_JSON);
-<br/>
-  - ST_LENGTH() : to calculate the length of geospatial data
-  - TO_GEOGRAPHY() : to convert STRING or ARRAY to geospatial data
-
-
+<br/><br/>
+  - ST_LENGTH() : to calculate the length of geospatial data <br/>
+  - TO_GEOGRAPHY() : to convert STRING or ARRAY to geospatial data <br/>
 
 
 
