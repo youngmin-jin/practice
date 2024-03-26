@@ -6,7 +6,7 @@
 - Child account's (e.g., ACME) cost is managed by the main organization
 <br/><br/><br/>
 
-# Others
+# Cases
 <details>
   <summary>Data Sharing</summary>
 
@@ -142,6 +142,47 @@ CREATE OR REPLACE VIEW DENVER_AREA_TRAILS AS
   - TO_GEOGRAPHY() : to convert STRING or ARRAY to geospatial data <br/>
 
 </details>
+
+<details>
+  <summary>Handle Unstructured Data</summary>
+
+# Handle Unstructured Data
+## Use SQL to flatten unstructured data
+
+## Table for unstructured data
+### 1. Create a table using 'VARIANT' 
+```
+create or replace TABLE AGS_GAME_AUDIENCE.RAW.GAME_LOGS (
+	RAW_LOG VARIANT
+);
+```
+
+</details>
+
+<details>
+  <summary>Task-driven Data Pipeline (using Task)</summary>
+  
+# Task-driven/ Time-driven Data Pipeline (using Task)
+![image](https://github.com/youngmin-jin/practice/assets/135728064/e8e90794-05db-44f2-ae82-70019a611971)
+
+</details>
+
+<details>
+  <summary>Event-driven Data Pipeline (using pub/sub)</summary>
+  
+## Event-driven Data Pipeline (using pub/sub)
+![image](https://github.com/youngmin-jin/practice/assets/135728064/851123f8-85c5-4893-9ec7-006d21905e7d) <br/><br/>
+![image](https://github.com/youngmin-jin/practice/assets/135728064/0759543f-ba92-4e47-a1fa-4c17fe1a41ac)
+
+
+</details>
+
+
+
+
+
+
+
 
 
 
