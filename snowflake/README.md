@@ -171,7 +171,7 @@ create or replace TABLE AGS_GAME_AUDIENCE.RAW.GAME_LOGS (
 # Time-driven Data Pipeline (using TASK)
 ## Flow
 ![image](https://github.com/youngmin-jin/practice/assets/135728064/2d94bfe7-8bd7-474e-a193-549c7026c555)
-<br/><br/>
+<br/><br/><br/>
 
 ## 1. Create GET_NEW_FILES (task) to get data from S3 to PIPELINE_LOGS (table)
 ```
@@ -200,7 +200,7 @@ SELECT *
 FROM PIPELINE_LOGS;
 ```
 ![image](https://github.com/youngmin-jin/practice/assets/135728064/443f7074-730f-4d3d-9c23-e9db12a83b7d)
-<br/><br/>
+<br/><br/><br/>
 
 
 ## 2. Create PL_LOGS (view) based on PIPELINE_LOGS (table)
@@ -220,10 +220,10 @@ SELECT *
 FROM PL_LOGS;
 ```
 ![image](https://github.com/youngmin-jin/practice/assets/135728064/30fc2271-d3da-4225-a316-99602cbe75f6)
-<br/><br/>
+<br/><br/><br/>
 
 
-## 3. Create LOGS_ENHANCED (table) and LOAD_LOGS_ENHANCED (task) to load the final data
+## 3. Create LOGS_ENHANCED (table) before creating 
 ```
 CREATE OR REPLACE TABLE AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED AS 
     SELECT LOGS.IP_ADDRESS 
@@ -266,8 +266,9 @@ SELECT *
 FROM AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED;
 ```
 ![image](https://github.com/youngmin-jin/practice/assets/135728064/b9665290-f4fc-47c1-bb2a-c1f4a457b0f8)
-<br/><br/>
+<br/><br/><br/>
 
+## 4. Creat LOAD_LOGS_ENHANCED (task) to get the final data and save to LOGS_ENHANCED (table)
 ```
 CREATE OR REPLACE TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED
 	WRAEHOUSE=COMPUTE_WH
@@ -342,16 +343,40 @@ FROM AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED;
 
 
 <details>
-  <summary>Event-driven Data Pipeline (using PIPE, STREAM, pub/sub)</summary>
-  
-# Event-driven Data Pipeline (using PIPE, STREAM, pub/sub)
+  <summary>Event-driven Data Pipeline (using PIPE, STREAM)</summary>
+
+# Event-driven Data Pipeline (using PIPE, STREAM)
 ## Flow
-![image](https://github.com/youngmin-jin/practice/assets/135728064/debdefd5-910b-4bba-a330-00826713132b)
-<br/><br/>
-*S3 already has a topic/ PIPE_GET_NEW_FILES subscripes
+![image](https://github.com/youngmin-jin/practice/assets/135728064/a5789b8f-4f23-49b9-96d4-76923f5fd83e)
+*ED_PIPELINE_LOGS (table) has to be created before PIPE_GET_NEW_FILES (pipe) <br/>
+*ED_CDC_STREAM (stream) loads real-time data from S3 
 <br/><br/>
 
-## 1. Create PIPE_GET_NEW_FILES (pipe) to get data from S3 to ED_PIPELINE_LOGS (table)
+## 1. Create ED_PIPELINE_LOGS (table) based on the S3 directly 
+```
+CREATE OR REPLACE TABLE AGS_GAME_AUDIENCE.RAW.ED_PIPELINE_LOGS AS
+      SELECT METADATA$FILENAME AS LOG_FILE_NAME
+          , METADATA$FILE_ROW_NUMBER AS LOG_FILE_ROW_ID
+          , CURRENT_TIMESTAMP(0) AS LOAD_LTZ
+          , GET($1,'datetime_iso8601')::TIMESTAMP_NTZ AS DATETIME_ISO8601
+          , GET($1,'user_event')::TEXT AS USER_EVENT
+          , GET($1,'user_login')::TEXT AS USER_LOGIN
+          , GET($1,'ip_address')::TEXT AS IP_ADDRESS    
+      FROM @AGS_GAME_AUDIENCE.RAW.UNI_KISHORE_PIPELINE
+      (FILE_FORMAT => 'FF_JSON_LOGS')
+;
+```
+
+#### Result
+```
+SELECT *
+FROM AGS_GAME_AUDIENCE.RAW.ED_PIPELINE_LOGS;
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/3086c23c-b3e3-4ef5-aac4-6e91583b3b1f)
+<br/><br/><br/>
+
+
+## 2. Create PIPE_GET_NEW_FILES (pipe) to subscribe a topic from S3 and copy into ED_PIPELINE_LOGS (table)
 ```
 CREATE OR REPLACE PIPE PIPE_GET_NEW_FILES
     AUTO_INGEST=TRUE
@@ -369,74 +394,121 @@ FROM (
 )
 FILE_FORMAT = (FORMAT_NAME = FF_JSON_LOGS);
 ```
-
-#### Result
-```
-SELECT *
-FROM ED_PIPELINE_LOGS;
-```
-![image](https://github.com/youngmin-jin/practice/assets/135728064/1e12774e-d504-49a8-82b3-8ed0ef8c2992)
 <br/><br/>
 
-
-## 2. Create LOAD_LOGS_ENHANCED (task) to load the final data to LOGS_ENHANCED (table) based on ED_PIPELINE_LOGS (table)
+## 3. Create ED_CDC_STREAM (stream) based on ED_PIPELINE_LOGS (table from S3)
 ```
-CREATE OR REPLACE TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED
-	WAREHOUSE=COMPUTE_WH
-	SCHEDULE='5 minute'
-	AS MERGE INTO AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED E
-        USING (SELECT LOGS.IP_ADDRESS 
-                    , LOGS.USER_LOGIN AS GAMER_NAME
-                    , LOGS.USER_EVENT AS GAME_EVENT_NAME
-                    , LOGS.DATETIME_ISO8601 AS GAME_EVENT_UTC
-                    , CITY
-                    , REGION
-                    , COUNTRY
-                    , TIMEZONE AS GAMER_LTZ_NAME
-                    , CONVERT_TIMEZONE('UTC', TIMEZONE, LOGS.DATETIME_ISO8601) AS GAME_EVENT_LTZ
-                    , DAYNAME(GAME_EVENT_LTZ) AS DOW_NAME
-                    , TOD_NAME
-                FROM AGS_GAME_AUDIENCE.RAW.ED_PIPELINE_LOGS LOGS
-                    JOIN IPINFO_GEOLOC.DEMO.LOCATION LOC 
-                    ON IPINFO_GEOLOC.PUBLIC.TO_JOIN_KEY(LOGS.IP_ADDRESS) = LOC.JOIN_KEY
-                        AND IPINFO_GEOLOC.PUBLIC.TO_INT(LOGS.IP_ADDRESS) 
-                        BETWEEN START_IP_INT AND END_IP_INT
-                    JOIN AGS_GAME_AUDIENCE.RAW.TIME_OF_DAY_LU TOD
-                    ON HOUR(GAME_EVENT_LTZ) = TOD.HOUR
-                ) R
-            ON E.GAMER_NAME = R.GAMER_NAME
-            AND E.GAME_EVENT_UTC = R.GAME_EVENT_UTC
-            AND E.GAME_EVENT_NAME = R.GAME_EVENT_NAME
-        WHEN NOT MATCHED THEN
-        INSERT (IP_ADDRESS
-                , GAMER_NAME
-                , GAME_EVENT_NAME
-                , GAME_EVENT_UTC
-                , CITY
-                , REGION
-                , COUNTRY
-                , GAMER_LTZ_NAME
-                , GAME_EVENT_LTZ
-                , DOW_NAME
-                , TOD_NAME
-        ) VALUES (IP_ADDRESS
-                , GAMER_NAME
-                , GAME_EVENT_NAME
-                , GAME_EVENT_UTC
-                , CITY
-                , REGION
-                , COUNTRY
-                , GAMER_LTZ_NAME
-                , GAME_EVENT_LTZ
-                , DOW_NAME
-                , TOD_NAME
-        );
+CREATE OR REPLACE STREAM AGS_GAME_AUDIENCE.RAW.ED_CDC_STREAM
+ON TABLE AGS_GAME_AUDIENCE.RAW.ED_PIPELINE_LOGS;
 
--- EXECUTE THE TASK
-EXECUTE TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED;
+--look at the stream you created
+SHOW STREAMS;
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/0a8fa2eb-1408-4bf7-a826-6c9ebbf23e55)
+<br/><br/>
 
--- SUSPEND THE TASK
-ALTER TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED SUSPEND;
+```
+--check to see if any changes are pending
+SELECT system$stream_has_data('ed_cdc_stream');
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/1c8c3c51-e983-491b-a42e-30cb3cf64ed8)
+<br/><br/>
+-> not started yet
+<br/><br/><br/>
+
+
+## 4. After few seconds, start ED_CDC_STREAM (stream) to load data real-time
+```
+SELECT * 
+FROM AGS_GAME_AUDIENCE.RAW.ED_CDC_STREAM; 
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/4634d992-cb5b-4da7-8793-a20a9a6b1eba)
+<br/><br/>
+
+```
+SELECT system$stream_has_data('ed_cdc_stream');
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/e2ae4b00-3a1d-46f3-8d4e-4be9ec8d3963)
+<br/><br/>
+-> started/ data will be added real-time 
+<br/><br/>
+
+*if your stream remains empty for more than 10 minutes, make sure your PIPE is running
+```
+SELECT SYSTEM$PIPE_STATUS('PIPE_GET_NEW_FILES');
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/4406e7ed-0ee2-43bf-a3dd-6831ef8fba72)
+<br/><br/><br/>
+
+
+## 5. Create LOGS_ENHANCED (table) based on ED_PIPELINE_LOGS (TABLE) as a final destination
+```
+CREATE OR REPLACE TABLE AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED AS 
+    SELECT LOGS.IP_ADDRESS 
+        , LOGS.USER_LOGIN AS GAMER_NAME
+        , LOGS.USER_EVENT AS GAME_EVENT_NAME
+        , LOGS.DATETIME_ISO8601 AS GAME_EVENT_UTC
+        , CITY
+        , REGION
+        , COUNTRY
+        , TIMEZONE AS GAMER_LTZ_NAME
+        , CONVERT_TIMEZONE('UTC', TIMEZONE, LOGS.DATETIME_ISO8601) AS GAME_EVENT_LTZ
+        , DAYNAME(TO_DATE(GAME_EVENT_LTZ)) AS DOW_NAME
+        , TOD_NAME
+    FROM AGS_GAME_AUDIENCE.RAW.ED_PIPELINE_LOGS LOGS
+        JOIN IPINFO_GEOLOC.DEMO.LOCATION LOC 
+        ON IPINFO_GEOLOC.PUBLIC.TO_JOIN_KEY(LOGS.IP_ADDRESS) = LOC.JOIN_KEY
+            AND IPINFO_GEOLOC.PUBLIC.TO_INT(LOGS.IP_ADDRESS) 
+            BETWEEN START_IP_INT AND END_IP_INT
+        JOIN AGS_GAME_AUDIENCE.RAW.TIME_OF_DAY_LU AS TIME
+        ON HOUR(GAME_EVENT_LTZ) = TIME.HOUR;
+```
+*Refer other tables here
+
+<br/><br/><br/>
+
+
+## 6. Create CDC_LOAD_LOGS_ENHANCED (task) to get the final data and save to LOGS_ENHANCED (table)
+```
+CREATE or REPLACE TASK AGS_GAME_AUDIENCE.RAW.CDC_LOAD_LOGS_ENHANCED
+	WAREHOUSE= COMPUTE_WH
+	SCHEDULE = '5 minutes'
+WHEN SYSTEM$STREAM_HAS_DATA('ED_CDC_STREAM')
+AS MERGE INTO AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED E
+USING (
+        SELECT CDC.IP_ADDRESS  
+        , CDC.USER_LOGIN AS GAMER_NAME
+        , CDC.USER_EVENT AS GAME_EVENT_NAME
+        , CDC.DATETIME_ISO8601 AS GAME_EVENT_UTC
+        , CITY
+        , REGION
+        , COUNTRY
+        , TIMEZONE AS GAMER_LTZ_NAME
+        , CONVERT_TIMEZONE('UTC', TIMEZONE, CDC.DATETIME_ISO8601) AS GAME_EVENT_LTZ
+        , DAYNAME(GAME_EVENT_LTZ) AS DOW_NAME
+        , TOD_NAME
+        FROM AGS_GAME_AUDIENCE.RAW.ED_CDC_STREAM CDC
+            JOIN IPINFO_GEOLOC.DEMO.LOCATION LOC
+            ON IPINFO_GEOLOC.PUBLIC.TO_JOIN_KEY(CDC.IP_ADDRESS) = LOC.JOIN_KEY
+            AND IPINFO_GEOLOC.PUBLIC.TO_INT(CDC.IP_ADDRESS) 
+            BETWEEN START_IP_INT AND END_IP_INT
+        JOIN AGS_GAME_AUDIENCE.RAW.TIME_OF_DAY_LU TOD
+            ON HOUR(GAME_EVENT_LTZ) = TOD.HOUR
+      ) R
+	ON R.GAMER_NAME = E.GAMER_NAME
+	AND R.GAME_EVENT_UTC = E.GAME_EVENT_UTC
+	AND R.GAME_EVENT_NAME = E.GAME_EVENT_NAME 
+WHEN NOT MATCHED THEN 
+INSERT (IP_ADDRESS, GAMER_NAME, GAME_EVENT_NAME
+        , GAME_EVENT_UTC, CITY, REGION
+        , COUNTRY, GAMER_LTZ_NAME, GAME_EVENT_LTZ
+        , DOW_NAME, TOD_NAME)
+        VALUES
+        (IP_ADDRESS, GAMER_NAME, GAME_EVENT_NAME
+        , GAME_EVENT_UTC, CITY, REGION
+        , COUNTRY, GAMER_LTZ_NAME, GAME_EVENT_LTZ
+        , DOW_NAME, TOD_NAME)
+;
 ```
 
 #### Result
@@ -444,14 +516,10 @@ ALTER TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED SUSPEND;
 SELECT *
 FROM AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED;
 ```
-![image](https://github.com/youngmin-jin/practice/assets/135728064/d14ae7be-00eb-4808-8be9-e5f2f190e693)
+![image](https://github.com/youngmin-jin/practice/assets/135728064/18e16eee-ffb6-4505-8cfc-9acdd76f9db0)
 <br/><br/>
-*it is **both time-driven** and **event-drive** (updated every 5 minutes and every time new file added) <br/>
--> time-driven: by 5 minutes schedule <br/>
--> event-driven: by subscription of the topic
-<br/><br/>
-</details>
 
+</details>
 
 
 
