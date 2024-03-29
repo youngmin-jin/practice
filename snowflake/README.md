@@ -56,6 +56,8 @@
 
 </details>
 
+
+
 <details>
   <summary>Connecting External Storages</summary>
   
@@ -116,6 +118,8 @@ ALTER STAGE ZENAS_ATHLEISURE_DB.PRODUCTS.UNI_KLAUS_CLOTHING REFRESH;
 
 </details>
 
+
+
 <details>
   <summary>Geospatial Data</summary>
   
@@ -159,27 +163,294 @@ create or replace TABLE AGS_GAME_AUDIENCE.RAW.GAME_LOGS (
 
 </details>
 
+
+
 <details>
-  <summary>Task-driven Data Pipeline (using Task)</summary>
+  <summary>Time-driven Data Pipeline (using TASK)</summary>
   
-# Task-driven/ Time-driven Data Pipeline (using Task)
-![image](https://github.com/youngmin-jin/practice/assets/135728064/e8e90794-05db-44f2-ae82-70019a611971)
+# Time-driven Data Pipeline (using TASK)
+## Flow
+![image](https://github.com/youngmin-jin/practice/assets/135728064/2d94bfe7-8bd7-474e-a193-549c7026c555)
+<br/><br/>
+
+## 1. Create GET_NEW_FILES (task) to get data from S3 to PIPELINE_LOGS (table)
+```
+CREATE OR REPLACE TABLE AGS_GAME_AUDIENCE.RAW.PIPELINE_LOGS (
+    RAW_LOG VARIANT
+);
+```
+```
+CREATE OR REPLACE TASK AGS_GAME_AUDIENCE.RAW.GET_NEW_FILES
+    WAREHOUSE = COMPUTE_WH
+    SCHEDULE = '5 minute'
+    AS  COPY INTO PIPELINE_LOGS
+        FROM @uni_kishore_pipeline
+        FILE_FORMAT = FF_JSON_LOGS;
+
+-- execute the task
+EXECUTE TASK AGS_GAME_AUDIENCE.RAW.GET_NEW_FILES;
+
+-- suspend the task to avoid extra cost
+ALTER TASK AGS_GAME_AUDIENCE.RAW.GET_NEW_FILES SUSPEND;
+```
+
+#### Result
+```
+SELECT *
+FROM PIPELINE_LOGS;
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/443f7074-730f-4d3d-9c23-e9db12a83b7d)
+<br/><br/>
+
+
+## 2. Create PL_LOGS (view) based on PIPELINE_LOGS (table)
+```
+CREATE OR REPLACE VIEW AGS_GAME_AUDIENCE.RAW.PL_LOGS AS 
+    SELECT RAW_LOG:datetime_iso8601::TIMESTAMP_LTZ AS DATETIME_ISO8601
+            , RAW_LOG:ip_address::TEXT AS IP_ADDRESS
+            , RAW_LOG:user_event::TEXT AS USER_EVENT
+            , RAW_LOG:user_login::TEXT AS USER_LOGIN
+            , RAW_LOG
+    FROM AGS_GAME_AUDIENCE.RAW.PIPELINE_LOGS;
+```
+
+#### Result
+```
+SELECT *
+FROM PL_LOGS;
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/30fc2271-d3da-4225-a316-99602cbe75f6)
+<br/><br/>
+
+
+## 3. Create LOGS_ENHANCED (table) and LOAD_LOGS_ENHANCED (task) to load the final data
+```
+CREATE OR REPLACE TABLE AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED AS 
+    SELECT LOGS.IP_ADDRESS 
+        , LOGS.USER_LOGIN AS GAMER_NAME
+        , LOGS.USER_EVENT AS GAME_EVENT_NAME
+        , LOGS.DATETIME_ISO8601 AS GAME_EVENT_UTC
+        , CITY
+        , REGION
+        , COUNTRY
+        , TIMEZONE AS GAMER_LTZ_NAME
+        , CONVERT_TIMEZONE('UTC', TIMEZONE, LOGS.DATETIME_ISO8601) AS GAME_EVENT_LTZ
+        , DAYNAME(TO_DATE(GAME_EVENT_LTZ)) AS DOW_NAME
+        , TOD_NAME
+    FROM AGS_GAME_AUDIENCE.RAW.PL_LOGS LOGS
+        JOIN IPINFO_GEOLOC.DEMO.LOCATION LOC 
+        ON IPINFO_GEOLOC.PUBLIC.TO_JOIN_KEY(LOGS.IP_ADDRESS) = LOC.JOIN_KEY
+            AND IPINFO_GEOLOC.PUBLIC.TO_INT(LOGS.IP_ADDRESS) 
+            BETWEEN START_IP_INT AND END_IP_INT
+        JOIN AGS_GAME_AUDIENCE.RAW.TIME_OF_DAY_LU AS TIME
+        ON HOUR(GAME_EVENT_LTZ) = TIME.HOUR;
+```
+*IPINFO_GEOLOC.DEMO.LOCATION (table) <br/>
+![image](https://github.com/youngmin-jin/practice/assets/135728064/3593cc0c-0b7a-4e51-877e-a32095615388)
+<br/><br/>
+
+*IPINFO_GEOLOC.PUBLIC.TO_JOIN_KEY (function) <br/>
+-> convert ip address to ip4v
+<br/><br/>
+
+*IPINFO_GEOLOC.PUBLIC.TO_INT (function) <br/>
+-> convert text to int
+<br/><br/>
+
+*AGS_GAME_AUDIENCE.RAW.TIME_OF_DAY_LU (table) <br/>
+![image](https://github.com/youngmin-jin/practice/assets/135728064/df96e995-3bb2-4f8b-ac13-6c6f7960fad2)
+
+#### Result
+```
+SELECT *
+FROM AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED;
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/b9665290-f4fc-47c1-bb2a-c1f4a457b0f8)
+<br/><br/>
+
+```
+CREATE OR REPLACE TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED
+	WRAEHOUSE=COMPUTE_WH
+	SCHEDULE='5 minute'
+	AS MERGE INTO AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED E
+        USING (SELECT LOGS.IP_ADDRESS  
+                    , LOGS.USER_LOGIN AS GAMER_NAME
+                    , LOGS.USER_EVENT AS GAME_EVENT_NAME
+                    , LOGS.DATETIME_ISO8601 AS GAME_EVENT_UTC
+                    , CITY 
+                    , REGION
+                    , COUNTRY
+                    , TIMEZONE AS GAMER_LTZ_NAME
+                    , CONVERT_TIMEZONE('UTC', TIMEZONE, LOGS.DATETIME_ISO8601) AS GAME_EVENT_LTZ
+                    , DAYNAME(GAME_EVENT_LTZ) AS DOW_NAME
+                    , TOD_NAME
+                FROM AGS_GAME_AUDIENCE.RAW.PL_LOGS LOGS
+                    JOIN IPINFO_GEOLOC.DEMO.LOCATION LOC 
+                    ON IPINFO_GEOLOC.PUBLIC.TO_JOIN_KEY(LOGS.IP_ADDRESS) = LOC.JOIN_KEY
+                        AND IPINFO_GEOLOC.PUBLIC.TO_INT(LOGS.IP_ADDRESS) 
+                        BETWEEN START_IP_INT AND END_IP_INT
+                    JOIN AGS_GAME_AUDIENCE.RAW.TIME_OF_DAY_LU TOD
+                    ON HOUR(GAME_EVENT_LTZ) = TOD.HOUR
+                ) R
+            ON E.GAMER_NAME = R.GAMER_NAME
+            AND E.GAME_EVENT_UTC = R.GAME_EVENT_UTC
+            AND E.GAME_EVENT_NAME = R.GAME_EVENT_NAME
+        WHEN NOT MATCHED THEN
+        INSERT (IP_ADDRESS
+                , GAMER_NAME
+                , GAME_EVENT_NAME
+                , GAME_EVENT_UTC
+                , CITY
+                , REGION
+                , COUNTRY
+                , GAMER_LTZ_NAME
+                , GAME_EVENT_LTZ
+                , DOW_NAME
+                , TOD_NAME
+        ) VALUES (IP_ADDRESS
+                , GAMER_NAME
+                , GAME_EVENT_NAME
+                , GAME_EVENT_UTC
+                , CITY
+                , REGION
+                , COUNTRY
+                , GAMER_LTZ_NAME
+                , GAME_EVENT_LTZ
+                , DOW_NAME
+                , TOD_NAME
+        );
+
+-- execute the task
+EXECUTE TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED;
+
+-- suspend the task to avoid extra cost
+ALTER TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED SUSPEND;
+```
+
+#### Result
+```
+SELECT *
+FROM AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED;
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/e19be5a4-36be-460d-8186-a0395c729215)
+<br/><br/>
+-> updated upon 5 minutes
+<br/><br/>
 
 </details>
 
+
+
 <details>
-  <summary>Event-driven Data Pipeline (using pub/sub)</summary>
+  <summary>Event-driven Data Pipeline (using PIPE, STREAM, pub/sub)</summary>
   
-## Event-driven Data Pipeline (using pub/sub)
-![image](https://github.com/youngmin-jin/practice/assets/135728064/851123f8-85c5-4893-9ec7-006d21905e7d) <br/><br/>
-![image](https://github.com/youngmin-jin/practice/assets/135728064/0759543f-ba92-4e47-a1fa-4c17fe1a41ac)
+# Event-driven Data Pipeline (using PIPE, STREAM, pub/sub)
+## Flow
+![image](https://github.com/youngmin-jin/practice/assets/135728064/debdefd5-910b-4bba-a330-00826713132b)
+<br/><br/>
+*S3 already has a topic/ PIPE_GET_NEW_FILES subscripes
+<br/><br/>
+
+## 1. Create PIPE_GET_NEW_FILES (pipe) to get data from S3 to ED_PIPELINE_LOGS (table)
+```
+CREATE OR REPLACE PIPE PIPE_GET_NEW_FILES
+    AUTO_INGEST=TRUE
+    AWS_SNS_TOPIC='arn:aws:sns:us-west-2:321463406630:dngw_topic' AS 
+COPY INTO ED_PIPELINE_LOGS
+FROM (
+    SELECT METADATA$FILENAME AS LOG_FILE_NAME 
+          , METADATA$FILE_ROW_NUMBER AS LOG_FILE_ROW_ID 
+          , CURRENT_TIMESTAMP(0) AS LOAD_LTZ 
+          , GET($1,'datetime_iso8601')::TIMESTAMP_NTZ AS DATETIME_ISO8601
+          , GET($1,'user_event')::TEXT AS USER_EVENT
+          , GET($1,'user_login')::TEXT AS USER_LOGIN
+          , GET($1,'ip_address')::TEXT AS IP_ADDRESS    
+    FROM @AGS_GAME_AUDIENCE.RAW.UNI_KISHORE_PIPELINE
+)
+FILE_FORMAT = (FORMAT_NAME = FF_JSON_LOGS);
+```
+
+#### Result
+```
+SELECT *
+FROM ED_PIPELINE_LOGS;
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/1e12774e-d504-49a8-82b3-8ed0ef8c2992)
+<br/><br/>
 
 
+## 2. Create LOAD_LOGS_ENHANCED (task) to load the final data to LOGS_ENHANCED (table) based on ED_PIPELINE_LOGS (table)
+```
+CREATE OR REPLACE TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED
+	WAREHOUSE=COMPUTE_WH
+	SCHEDULE='5 minute'
+	AS MERGE INTO AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED E
+        USING (SELECT LOGS.IP_ADDRESS 
+                    , LOGS.USER_LOGIN AS GAMER_NAME
+                    , LOGS.USER_EVENT AS GAME_EVENT_NAME
+                    , LOGS.DATETIME_ISO8601 AS GAME_EVENT_UTC
+                    , CITY
+                    , REGION
+                    , COUNTRY
+                    , TIMEZONE AS GAMER_LTZ_NAME
+                    , CONVERT_TIMEZONE('UTC', TIMEZONE, LOGS.DATETIME_ISO8601) AS GAME_EVENT_LTZ
+                    , DAYNAME(GAME_EVENT_LTZ) AS DOW_NAME
+                    , TOD_NAME
+                FROM AGS_GAME_AUDIENCE.RAW.ED_PIPELINE_LOGS LOGS
+                    JOIN IPINFO_GEOLOC.DEMO.LOCATION LOC 
+                    ON IPINFO_GEOLOC.PUBLIC.TO_JOIN_KEY(LOGS.IP_ADDRESS) = LOC.JOIN_KEY
+                        AND IPINFO_GEOLOC.PUBLIC.TO_INT(LOGS.IP_ADDRESS) 
+                        BETWEEN START_IP_INT AND END_IP_INT
+                    JOIN AGS_GAME_AUDIENCE.RAW.TIME_OF_DAY_LU TOD
+                    ON HOUR(GAME_EVENT_LTZ) = TOD.HOUR
+                ) R
+            ON E.GAMER_NAME = R.GAMER_NAME
+            AND E.GAME_EVENT_UTC = R.GAME_EVENT_UTC
+            AND E.GAME_EVENT_NAME = R.GAME_EVENT_NAME
+        WHEN NOT MATCHED THEN
+        INSERT (IP_ADDRESS
+                , GAMER_NAME
+                , GAME_EVENT_NAME
+                , GAME_EVENT_UTC
+                , CITY
+                , REGION
+                , COUNTRY
+                , GAMER_LTZ_NAME
+                , GAME_EVENT_LTZ
+                , DOW_NAME
+                , TOD_NAME
+        ) VALUES (IP_ADDRESS
+                , GAMER_NAME
+                , GAME_EVENT_NAME
+                , GAME_EVENT_UTC
+                , CITY
+                , REGION
+                , COUNTRY
+                , GAMER_LTZ_NAME
+                , GAME_EVENT_LTZ
+                , DOW_NAME
+                , TOD_NAME
+        );
+
+-- EXECUTE THE TASK
+EXECUTE TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED;
+
+-- SUSPEND THE TASK
+ALTER TASK AGS_GAME_AUDIENCE.RAW.LOAD_LOGS_ENHANCED SUSPEND;
+```
+
+#### Result
+```
+SELECT *
+FROM AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED;
+```
+![image](https://github.com/youngmin-jin/practice/assets/135728064/d14ae7be-00eb-4808-8be9-e5f2f190e693)
+<br/><br/>
+*it is **both time-driven** and **event-drive** (updated every 5 minutes and every time new file added) <br/>
+-> time-driven: by 5 minutes schedule <br/>
+-> event-driven: by subscription of the topic
+<br/><br/>
 </details>
-
-
-
-
 
 
 
