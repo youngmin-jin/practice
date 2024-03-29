@@ -349,8 +349,9 @@ FROM AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED;
 ## Flow
 ![image](https://github.com/youngmin-jin/practice/assets/135728064/a5789b8f-4f23-49b9-96d4-76923f5fd83e)
 *ED_PIPELINE_LOGS (table) has to be created before PIPE_GET_NEW_FILES (pipe) <br/>
-*ED_CDC_STREAM (stream) loads real-time data from S3 
-<br/><br/>
+*Real-time data loaded by ED_CDC_STREAM (stream) has no specific table <br/>
+*LOGS_ENHANCED (table) has to be created before CDC_LOAD_LOGS_ENHANCED (task)
+<br/><br/><br/>
 
 ## 1. Create ED_PIPELINE_LOGS (table) based on the S3 directly 
 ```
@@ -463,7 +464,7 @@ CREATE OR REPLACE TABLE AGS_GAME_AUDIENCE.ENHANCED.LOGS_ENHANCED AS
         JOIN AGS_GAME_AUDIENCE.RAW.TIME_OF_DAY_LU AS TIME
         ON HOUR(GAME_EVENT_LTZ) = TIME.HOUR;
 ```
-*Refer other tables here
+*Refer other tables [here](https://github.com/youngmin-jin/practice/blob/main/snowflake/README.md#3-create-logs_enhanced-table-before-creating)
 
 <br/><br/><br/>
 
@@ -509,6 +510,12 @@ INSERT (IP_ADDRESS, GAMER_NAME, GAME_EVENT_NAME
         , COUNTRY, GAMER_LTZ_NAME, GAME_EVENT_LTZ
         , DOW_NAME, TOD_NAME)
 ;
+
+-- execute the task
+EXECUTE TASK AGS_GAME_AUDIENCE.RAW.CDC_LOAD_LOGS_ENHANCED;
+
+-- suspend the task
+ALTER TASK AGS_GAME_AUDIENCE.RAW.CDC_LOAD_LOGS_ENHANCED SUSPEND;
 ```
 
 #### Result
