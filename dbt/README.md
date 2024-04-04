@@ -2,9 +2,13 @@
 [Connect dbt to BigQuery](https://docs.getdbt.com/guides/bigquery?step=1)
 <br/><br/>
 
+## Command
+- dbt run
+<br/><br/>
+
 ## Cases
 <details>
-  <summary>Change default setting from 'view' to 'table'</summary>
+  <summary>Change default setting from 'view' to 'table' by modyfing dbt_project.yml</summary>
   
 ### 1. Confirm that the default was a 'view' in dbt_project.yml and BigQuery UI
 <img src="https://github.com/youngmin-jin/practice/assets/135728064/af730daf-9074-4ac0-a1f8-51f425dff041" width="700"> <br/><br/>
@@ -27,8 +31,24 @@
 <img src="https://github.com/youngmin-jin/practice/assets/135728064/c99767ed-13f6-4dad-a46e-675ca85b9395" width="700"> <br/><br/>
 <img src="https://github.com/youngmin-jin/practice/assets/135728064/a205671f-1820-42bc-9d99-858d9413b8ea" width="700"> <br/><br/>
 
+</details>
+
+
+<details>
+  <summary></summary>
+
+
 
 </details>
+
+
+
+
+
+
+
+
+
 
 
 
