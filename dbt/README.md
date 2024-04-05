@@ -2,7 +2,33 @@
 [Connect dbt to BigQuery](https://docs.getdbt.com/guides/bigquery?step=1)
 <br/><br/>
 
-## Points
+## Concepts・Flow
+<img src="https://github.com/youngmin-jin/practice/assets/135728064/8b0ef66a-8c0b-498a-af95-0d46dd90bc2f" width="600"> <br/>
+- DBT (Data Building Tool) is an open source tool used in transforming data; the T in ELT
+- Can transform data using SQL which is favor to analytics engineers
+- Can write and execute the code **inside your data warehouse**
+
+
+## Command
+- dbt run <br/>
+: reflect all changes to the destination (e.g., BigQuery)
+
+- dbt test <br/>
+: iterates through yml files  
+
+- dbt docs generate
+  - generate the docs for the project
+  - dbt introspects the project and warehouse to generate a json file with rich docs about the project <br/><br/>
+    <details>
+      <summary>details here</summary>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/288e5d78-964a-4f74-bebe-77a18f3d9c28" width="700"> <br/><br/>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/4e7e4213-da29-4fed-9fce-fa8cf917bf44" width="600"> <br/><br/>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/5e27582e-7b30-4cb3-91f4-8ef67fb4a8e2" width="700"> <br/><br/>
+    </details>
+  
+<br>
+
+## Points・Cases
 <details>
   <summary>No need to define the dependencies unlike Airflow</summary>
 <br/>
@@ -127,28 +153,7 @@ select * from final
 
 </details>
 
-<br>
 
-## Command
-- dbt run <br/>
-: reflect all changes to the destination (e.g., BigQuery)
-
-- dbt test <br/>
-: iterates through yml files  
-
-- dbt docs generate
-  - generate the docs for the project
-  - dbt introspects the project and warehouse to generate a json file with rich docs about the project <br/><br/>
-    <details>
-      <summary>details here</summary>
-        <img src="https://github.com/youngmin-jin/practice/assets/135728064/288e5d78-964a-4f74-bebe-77a18f3d9c28" width="700"> <br/><br/>
-        <img src="https://github.com/youngmin-jin/practice/assets/135728064/4e7e4213-da29-4fed-9fce-fa8cf917bf44" width="600"> <br/><br/>
-        <img src="https://github.com/youngmin-jin/practice/assets/135728064/5e27582e-7b30-4cb3-91f4-8ef67fb4a8e2" width="700"> <br/><br/>
-    </details>
-  
-<br>
-
-## Cases
 <details>
   <summary>Change default setting from 'view' to 'table' by modyfing dbt_project.yml</summary>
   
