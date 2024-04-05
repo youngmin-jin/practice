@@ -10,6 +10,25 @@
 
 <br><br>
 
+## Command
+- dbt run <br/>
+: reflect all changes to the destination (e.g., BigQuery)
+
+- dbt test <br/>
+: iterates through yml files  
+
+- dbt docs generate
+  - generate the docs for the project
+  - dbt introspects the project and warehouse to generate a json file with rich docs about the project <br/><br/>
+    <details>
+      <summary>details here</summary>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/288e5d78-964a-4f74-bebe-77a18f3d9c28" width="700"> <br/><br/>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/4e7e4213-da29-4fed-9fce-fa8cf917bf44" width="600"> <br/><br/>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/5e27582e-7b30-4cb3-91f4-8ef67fb4a8e2" width="700"> <br/><br/>
+    </details>
+  
+<br>
+
 ## YAML files
 - dbt_project.yml
   - define project name, version, model`s materialized.. 
@@ -53,8 +72,8 @@
             - not_null
         - name: first_order_date
           description: NULL when a customer has not yet placed an order
-  
-...
+
+   ... 
   
     - name: stg_orders
       description: This model cleans up order data
@@ -68,7 +87,7 @@
           tests:
             - accepted_values:
                 values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
-...
+    ...
   ```  
   -> it appears in the docs like below <br><br>
   <img src="https://github.com/youngmin-jin/practice/assets/135728064/2da8e110-5bcd-43d5-8d76-90f8f90f7d31" width="600"> <br/><br/>
@@ -77,25 +96,6 @@
   <img src="https://github.com/youngmin-jin/practice/assets/135728064/e11b5339-5ee4-4b12-8b54-c5e44a9ec718" width="600">
 
 <br><br>
-
-## Command
-- dbt run <br/>
-: reflect all changes to the destination (e.g., BigQuery)
-
-- dbt test <br/>
-: iterates through yml files  
-
-- dbt docs generate
-  - generate the docs for the project
-  - dbt introspects the project and warehouse to generate a json file with rich docs about the project <br/><br/>
-    <details>
-      <summary>details here</summary>
-        <img src="https://github.com/youngmin-jin/practice/assets/135728064/288e5d78-964a-4f74-bebe-77a18f3d9c28" width="700"> <br/><br/>
-        <img src="https://github.com/youngmin-jin/practice/assets/135728064/4e7e4213-da29-4fed-9fce-fa8cf917bf44" width="600"> <br/><br/>
-        <img src="https://github.com/youngmin-jin/practice/assets/135728064/5e27582e-7b30-4cb3-91f4-8ef67fb4a8e2" width="700"> <br/><br/>
-    </details>
-  
-<br>
 
 ## Points・Cases
 <details>
