@@ -54,14 +54,7 @@
         - name: first_order_date
           description: NULL when a customer has not yet placed an order
   
-    - name: stg_customers
-      description: This model cleans up customer data
-      columns:
-        - name: customer_id
-          description: Primary key
-          tests:
-            - unique
-            - not_null
+...
   
     - name: stg_orders
       description: This model cleans up order data
@@ -75,12 +68,7 @@
           tests:
             - accepted_values:
                 values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
-        - name: customer_id
-          tests:
-            - not_null
-            - relationships:
-                to: ref('stg_customers')
-                field: customer_id
+...
   ```  
   -> it appears in the docs like below <br><br>
   <img src="https://github.com/youngmin-jin/practice/assets/135728064/2da8e110-5bcd-43d5-8d76-90f8f90f7d31" width="600"> <br/><br/>
