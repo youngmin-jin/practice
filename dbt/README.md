@@ -3,45 +3,62 @@
 <br/><br/>
 
 ## Characteristics
-- No need to explicitly define the dependencies unlike Airflow <br/><br/>
-  customers.sql
-  ```
-  with customers as (
-      select * from {{ ref('stg_customers') }}
-  ),
-  orders as (
-      select * from {{ ref('stg_orders') }}
-  ),
-  customer_orders as (
-      select
-          customer_id,
-          min(order_date) as first_order_date,
-          max(order_date) as most_recent_order_date,
-          count(order_id) as number_of_orders
-      from orders
-      group by 1
-  ),
-  final as (
-      select
-          customers.customer_id,
-          customers.first_name,
-          customers.last_name,
-          customer_orders.first_order_date,
-          customer_orders.most_recent_order_date,
-          coalesce(customer_orders.number_of_orders, 0) as number_of_orders
-      from customers
-      left join customer_orders using (customer_id)
-  )
-  select * from final
-  ```
-  <img src="https://github.com/youngmin-jin/practice/assets/135728064/c35ec984-1db0-469f-b552-9fc62d3bc318" width="600"> <br/>
-  -> customers.sql depends on stg_customers.sql and stg_orders.sql, dbt builds customers.sql last <br/>
-  -> no need to define these dependencies
+<details>
+  <summary>No need to define the dependencies unlike Airflow</summary>
+<br/>
+customers.sql
 
-<br/><br/>
+```
+with customers as (
+    select * from {{ ref('stg_customers') }}
+),
+orders as (
+    select * from {{ ref('stg_orders') }}
+),
+customer_orders as (
+    select
+        customer_id,
+        min(order_date) as first_order_date,
+        max(order_date) as most_recent_order_date,
+        count(order_id) as number_of_orders
+    from orders
+    group by 1
+),
+final as (
+    select
+        customers.customer_id,
+        customers.first_name,
+        customers.last_name,
+        customer_orders.first_order_date,
+        customer_orders.most_recent_order_date,
+        coalesce(customer_orders.number_of_orders, 0) as number_of_orders
+    from customers
+    left join customer_orders using (customer_id)
+)
+select * from final
+```
+<img src="https://github.com/youngmin-jin/practice/assets/135728064/c35ec984-1db0-469f-b552-9fc62d3bc318" width="600"> <br/>
+-> customers.sql depends on stg_customers.sql and stg_orders.sql, dbt builds customers.sql last <br/>
+-> no need to define these dependencies
+
+</details>
+
 
 ## Command
-- dbt run
+- dbt run <br/>
+: reflect all changes to the destination (e.g., BigQuery)
+
+- dbt test <br/>
+: iterates through yml files  
+
+- dbt docs generate
+  - generate the docs for the project
+  - dbt introspects the project and warehouse to generate a json file with rich docs about the project
+  <br/><br/>
+  <img src="https://github.com/youngmin-jin/practice/assets/135728064/288e5d78-964a-4f74-bebe-77a18f3d9c28" width="700"> <br/><br/>
+ <img src="https://github.com/youngmin-jin/practice/assets/135728064/4e7e4213-da29-4fed-9fce-fa8cf917bf44" width="600"> <br/><br/>
+ <img src="https://github.com/youngmin-jin/practice/assets/135728064/5e27582e-7b30-4cb3-91f4-8ef67fb4a8e2" width="700"> <br/><br/> 
+
 <br/><br/>
 
 ## Cases
