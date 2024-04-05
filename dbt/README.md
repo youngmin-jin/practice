@@ -43,6 +43,7 @@ select * from final
 
 </details>
 
+<br>
 
 ## Command
 - dbt run <br/>
@@ -53,13 +54,15 @@ select * from final
 
 - dbt docs generate
   - generate the docs for the project
-  - dbt introspects the project and warehouse to generate a json file with rich docs about the project
-  <br/><br/>
-  <img src="https://github.com/youngmin-jin/practice/assets/135728064/288e5d78-964a-4f74-bebe-77a18f3d9c28" width="700"> <br/><br/>
- <img src="https://github.com/youngmin-jin/practice/assets/135728064/4e7e4213-da29-4fed-9fce-fa8cf917bf44" width="600"> <br/><br/>
- <img src="https://github.com/youngmin-jin/practice/assets/135728064/5e27582e-7b30-4cb3-91f4-8ef67fb4a8e2" width="700"> <br/><br/> 
-
-<br/><br/>
+  - dbt introspects the project and warehouse to generate a json file with rich docs about the project <br/><br/>
+    <details>
+      <summary>details here</summary>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/288e5d78-964a-4f74-bebe-77a18f3d9c28" width="700"> <br/><br/>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/4e7e4213-da29-4fed-9fce-fa8cf917bf44" width="600"> <br/><br/>
+        <img src="https://github.com/youngmin-jin/practice/assets/135728064/5e27582e-7b30-4cb3-91f4-8ef67fb4a8e2" width="700"> <br/><br/>
+    </details>
+  
+<br>
 
 ## Cases
 <details>
@@ -90,9 +93,32 @@ select * from final
 
 
 <details>
-  <summary></summary>
+  <summary>Deploy the project</summary>
 
+### Ref
+https://docs.getdbt.com/guides/bigquery?step=15
 
+### 1. Create a deployment environment
+1. In the upper left, select Deploy, then click Environments.
+2. Click Create Environment.
+3. In the Name field, write the name of your deployment environment. For example, "Production."
+4. In the dbt Version field, select the latest version from the dropdown.
+5. Under Deployment connection, enter the name of the dataset you want to use as the target, such as "Analytics".This will allow dbt to build and work with that dataset. For some data warehouses, the target dataset may be referred to as a "schema".
+6. Click Save.
+
+### 2. Create and run a job
+1. After creating your deployment environment, you should be directed to the page for a new environment. If not, select Deploy in the upper left, then click Jobs.
+2. Click Create one and provide a name, for example, "Production run", and link to the Environment you just created.
+3. Scroll down to the Execution Settings section.
+4. Under Commands, add this command as part of your job if you don't see it:
+```
+dbt build
+```
+5. Select the Generate docs on run checkbox to automatically generate updated project docs each time your job runs.
+6. For this exercise, do not set a schedule for your project to run — while your organization's project should run regularly, there's no need to run this example project on a schedule. Scheduling a job is sometimes referred to as deploying a project.
+7. Select Save, then click Run now to run your job.
+8. Click the run and watch its progress under "Run history."
+9. Once the run is complete, click View Documentation to see the docs for your project.
 
 </details>
 
