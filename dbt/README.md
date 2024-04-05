@@ -2,6 +2,44 @@
 [Connect dbt to BigQuery](https://docs.getdbt.com/guides/bigquery?step=1)
 <br/><br/>
 
+## Characteristics
+- No need to explicitly define the dependencies unlike Airflow <br/><br/>
+  customers.sql
+  ```
+  with customers as (
+      select * from {{ ref('stg_customers') }}
+  ),
+  orders as (
+      select * from {{ ref('stg_orders') }}
+  ),
+  customer_orders as (
+      select
+          customer_id,
+          min(order_date) as first_order_date,
+          max(order_date) as most_recent_order_date,
+          count(order_id) as number_of_orders
+      from orders
+      group by 1
+  ),
+  final as (
+      select
+          customers.customer_id,
+          customers.first_name,
+          customers.last_name,
+          customer_orders.first_order_date,
+          customer_orders.most_recent_order_date,
+          coalesce(customer_orders.number_of_orders, 0) as number_of_orders
+      from customers
+      left join customer_orders using (customer_id)
+  )
+  select * from final
+  ```
+  <img src="https://github.com/youngmin-jin/practice/assets/135728064/c35ec984-1db0-469f-b552-9fc62d3bc318" width="600"> <br/>
+  -> customers.sql depends on stg_customers.sql and stg_orders.sql, dbt builds customers.sql last <br/>
+  -> no need to define these dependencies
+
+<br/><br/>
+
 ## Command
 - dbt run
 <br/><br/>
