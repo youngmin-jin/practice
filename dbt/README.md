@@ -113,7 +113,7 @@
 
 <br><br>
 
-## Points・Cases
+## Cases
 <details>
   <summary>No need to define the dependencies unlike Airflow</summary>
 <br/>
