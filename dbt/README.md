@@ -3,7 +3,7 @@
 <br/><br/>
 
 ## Concepts・Flow
-<img src="https://github.com/youngmin-jin/practice/assets/135728064/8b0ef66a-8c0b-498a-af95-0d46dd90bc2f" width="600"> <br/>
+<img src="https://github.com/youngmin-jin/practice/assets/135728064/8d780ba6-d339-47be-95d5-e4232d6a3d5e" width="700"> <br/>
 - DBT (Data Building Tool) is an open source tool used in transforming data; the T in ELT
 - Can transform data using SQL which is favor to analytics engineers
 - Can write and execute the code **inside your data warehouse**
