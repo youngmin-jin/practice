@@ -10,6 +10,86 @@
 
 <br><br>
 
+## YAML files
+- dbt_project.yml
+  - define project name, version, model`s materialized.. 
+  ```  
+  name: 'jaffle_shop'
+  version: '1.0.0'
+  config-version: 2
+  
+  profile: 'default'
+  
+  model-paths: ["models"]
+  analysis-paths: ["analyses"]
+  test-paths: ["tests"]
+  seed-paths: ["seeds"]
+  macro-paths: ["macros"]
+  snapshot-paths: ["snapshots"]
+  
+  target-path: "target"  # directory which will store compiled SQL files
+  clean-targets:         # directories to be removed by `dbt clean`
+    - "target"
+    - "dbt_packages"
+  
+  models:
+    jaffle_shop:
+      +materialized: table
+  ```
+
+- schema.yml
+  - define model`s schema (name, description..) and test 
+  ```
+  version: 2
+  
+  models:
+    - name: customers
+      description: One record per customer
+      columns:
+        - name: customer_id
+          description: Primary key
+          tests:
+            - unique
+            - not_null
+        - name: first_order_date
+          description: NULL when a customer has not yet placed an order
+  
+    - name: stg_customers
+      description: This model cleans up customer data
+      columns:
+        - name: customer_id
+          description: Primary key
+          tests:
+            - unique
+            - not_null
+  
+    - name: stg_orders
+      description: This model cleans up order data
+      columns:
+        - name: order_id
+          description: Primary key
+          tests:
+            - unique
+            - not_null
+        - name: status
+          tests:
+            - accepted_values:
+                values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+        - name: customer_id
+          tests:
+            - not_null
+            - relationships:
+                to: ref('stg_customers')
+                field: customer_id
+  ```  
+  -> it appears in the docs like below <br><br>
+  <img src="https://github.com/youngmin-jin/practice/assets/135728064/2da8e110-5bcd-43d5-8d76-90f8f90f7d31" width="600"> <br/><br/>
+  
+  -> all 'tests' are tested when running 'dbt test' <br><br>
+  <img src="https://github.com/youngmin-jin/practice/assets/135728064/e11b5339-5ee4-4b12-8b54-c5e44a9ec718" width="600">
+
+<br><br>
+
 ## Command
 - dbt run <br/>
 : reflect all changes to the destination (e.g., BigQuery)
@@ -67,90 +147,6 @@ select * from final
 <img src="https://github.com/youngmin-jin/practice/assets/135728064/c35ec984-1db0-469f-b552-9fc62d3bc318" width="600"> <br/>
 -> customers.sql depends on stg_customers.sql and stg_orders.sql, dbt builds customers.sql last <br/>
 -> no need to define these dependencies
-
-</details>
-
-<details>
-  <summary>YAML files</summary>
-<br/>
-  
-- dbt_project.yml
-  - define model name, version, model`s materialized..
-  ```  
-  name: 'jaffle_shop'
-  version: '1.0.0'
-  config-version: 2
-  
-  profile: 'default'
-  
-  model-paths: ["models"]
-  analysis-paths: ["analyses"]
-  test-paths: ["tests"]
-  seed-paths: ["seeds"]
-  macro-paths: ["macros"]
-  snapshot-paths: ["snapshots"]
-  
-  target-path: "target"  # directory which will store compiled SQL files
-  clean-targets:         # directories to be removed by `dbt clean`
-    - "target"
-    - "dbt_packages"
-  
-  models:
-    jaffle_shop:
-      +materialized: table
-  ```
-<br>
-
-- schema.yml
-  - define model`s schema (name, description..) and test 
-  ```
-  version: 2
-  
-  models:
-    - name: customers
-      description: One record per customer
-      columns:
-        - name: customer_id
-          description: Primary key
-          tests:
-            - unique
-            - not_null
-        - name: first_order_date
-          description: NULL when a customer has not yet placed an order
-  
-    - name: stg_customers
-      description: This model cleans up customer data
-      columns:
-        - name: customer_id
-          description: Primary key
-          tests:
-            - unique
-            - not_null
-  
-    - name: stg_orders
-      description: This model cleans up order data
-      columns:
-        - name: order_id
-          description: Primary key
-          tests:
-            - unique
-            - not_null
-        - name: status
-          tests:
-            - accepted_values:
-                values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
-        - name: customer_id
-          tests:
-            - not_null
-            - relationships:
-                to: ref('stg_customers')
-                field: customer_id
-  ```  
-  -> it appears in the docs like below <br><br>
-  <img src="https://github.com/youngmin-jin/practice/assets/135728064/2da8e110-5bcd-43d5-8d76-90f8f90f7d31" width="600"> <br/><br/>
-  
-  -> all 'tests' are tested when running 'dbt test' <br><br>
-  <img src="https://github.com/youngmin-jin/practice/assets/135728064/e11b5339-5ee4-4b12-8b54-c5e44a9ec718" width="600">
 
 </details>
 
