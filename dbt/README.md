@@ -6,16 +6,34 @@
 <img src="https://github.com/youngmin-jin/practice/assets/135728064/8d780ba6-d339-47be-95d5-e4232d6a3d5e" width="700"> <br/>
 - DBT (Data Building Tool) is an open source tool used in transforming data; the T in ELT
 - Can transform data using SQL which is favor to analytics engineers
-- Can write and execute the code **inside your data warehouse**
+- Can write and execute the code **inside your data warehouse** <br><br>
+- Models can be created by SQL or Python
+  - However, creating models using Python needs a separate environment for running Python code <br>
+    (SQL just run quries using the existing data warehouse!) <br><br>
+    <img src="https://github.com/youngmin-jin/practice/assets/135728064/90a93988-8432-4542-9670-5e4c992c9ad5" width="500"> <br/>
+
 
 <br><br>
 
 ## Command
-- dbt run <br/>
-: reflect all changes to the destination (e.g., BigQuery)
+- dbt run
+  - executes your dbt project
+  - sends your codes to your data warehouse for processing 
+  - update data in your warehouse
+
+- dbt compile
+  - non-mandatory pre-processing step to catch errors
+  - possible to skip if not needed
 
 - dbt test <br/>
-: iterates through yml files  
+  - runs tests over <br>
+    1) .sql models in "tests" folder
+    2) models whose "tests" in yml files <br/><br/>
+      <details>
+        <summary>details here</summary>
+         <img src="https://github.com/youngmin-jin/practice/assets/135728064/e556182f-5c89-4029-924b-c72dfc778690" width="200"> <br/>
+         <img src="https://github.com/youngmin-jin/practice/assets/135728064/ed800670-a580-4acf-bbf3-77b4fe37cb0e" width="400"> <br/>
+      </details>
 
 - dbt docs generate
   - generate the docs for the project
