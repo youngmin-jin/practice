@@ -4,9 +4,15 @@
 
 ## Concepts・Flow
 <img src="https://github.com/youngmin-jin/practice/assets/135728064/8d780ba6-d339-47be-95d5-e4232d6a3d5e" width="700"> <br/>
-- DBT (Data Building Tool) is an open source tool used in transforming data; the T in ELT
+- **DBT** (Data Building Tool) is an open source tool used in transforming data
+- Version control and CI/CD
+  - Just like Git, dbt allows you to version control your SQL code. This means you can track changes, revert to previous versions if needed, and collaborate with others on data transformations. This ensures a reliable and traceable data pipeline.
+- Lineage Tracking
+  - dbt helps you understand the lineage between tables. It clarifies how data flows from raw sources to final models, making it easier to identify the origin and impact of changes. This is crucial for data quality and debugging any issues.
+
 - Can transform data using SQL which is favor to analytics engineers
-- Can write and execute the code **inside your data warehouse** <br><br>
+- Can write and execute the code **inside your data warehouse** 
+
 - Models can be created by SQL or Python
   - However, creating models using Python needs a separate environment for running Python code <br>
     (SQL just run quries using the existing data warehouse!) <br><br>
