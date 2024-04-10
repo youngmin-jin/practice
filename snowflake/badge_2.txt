@@ -1,0 +1,228 @@
+-- ############### upload smoothies data #####################
+-- file format
+CREATE FILE FORMAT SMOOTHIES.PUBLIC.TWO_HEADERROW_PCT_DELIM
+    TYPE=CSV,
+    SKIP_HEADER=2,
+    FIELD_DELIMITER='%',
+    TRIM_SPACE=FALSE,
+    FIELD_OPTIONALLY_ENCLOSED_BY=NONE,
+    REPLACE_INVALID_CHARACTERS=TRUE,
+    DATE_FORMAT=AUTO,
+    TIME_FORMAT=AUTO,
+    TIMESTAMP_FORMAT=AUTO
+;
+
+-- query not-yet-loaded data using the file format
+SELECT $1, $2
+FROM @smoothies.public.my_internal_stage/fruits_available_for_smoothies.txt
+(file_format => smoothies.public.two_headerrow_pct_delim);
+
+-- upload 
+COPY INTO "SMOOTHIES"."PUBLIC"."FRUIT_OPTIONS"
+FROM (
+    SELECT $2 AS FRUIT_ID, $1 AS FRUIT_NAME
+    FROM @smoothies.public.my_internal_stage/fruits_available_for_smoothies.txt
+)
+FILE_FORMAT = (FORMAT_NAME=SMOOTHIES.PUBLIC.TWO_HEADERROW_PCT_DELIM)
+ON_ERROR=ABORT_STATEMENT
+PURGE=TRUE;
+
+SELECT *
+FROM FRUIT_OPTIONS;
+
+
+-- grader
+select grader(step, (actual = expected), actual, expected, description) as graded_results from 
+  ( SELECT 
+  'DORA_IS_WORKING' as step
+ ,(select 223) as actual
+ , 223 as expected
+ ,'Dora is working!' as description
+); 
+
+select GRADER(step, (actual = expected), actual, expected, description) as graded_results from (
+  SELECT 'DABW001' as step
+ ,( select count(*) 
+   from SMOOTHIES.PUBLIC.FRUIT_OPTIONS) as actual
+ , 25 as expected
+ ,'Fruit Options table looks good' as description
+);
+
+
+-- create order table
+CREATE TABLE SMOOTHIES.PUBLIC.ORDERS(
+    ingredients VARCHAR(200)
+);
+
+-- grader
+select GRADER(step, (actual = expected), actual, expected, description) as graded_results from (
+SELECT 'DABW002' as step
+ ,(select IFF(count(*)>=5,5,0)
+    from (select ingredients from smoothies.public.orders
+    group by ingredients)
+ ) as actual
+ ,  5 as expected
+ ,'At least 5 different orders entered' as description
+);
+
+select GRADER(step, (actual = expected), actual, expected, description) as graded_results from (
+  SELECT 'DABW003' as step
+ ,(select ascii(fruit_name) from smoothies.public.fruit_options
+where fruit_name ilike 'z%') as actual
+ , 90 as expected
+ ,'A mystery check for the inquisitive' as description
+);
+
+
+-- add table column
+ALTER TABLE SMOOTHIES.PUBLIC.ORDERS 
+-- ADD COLUMN name_on_order VARCHAR(100);
+ADD COLUMN order_filled BOOLEAN DEFAULT FALSE;
+-- DROP COLUMN order_filled;
+
+SELECT *
+FROM SMOOTHIES.PUBLIC.ORDERS;
+
+-- update smoothies.public.orders
+-- set order_filled = true
+-- where name_on_order is null;
+
+
+-- grader
+select GRADER(step, (actual = expected), actual, expected, description) as graded_results from (
+  SELECT 'DABW004' as step
+ ,( select count(*) from smoothies.information_schema.columns
+    where table_schema = 'PUBLIC' 
+    and table_name = 'ORDERS'
+    and column_name = 'ORDER_FILLED'
+    and column_default = 'FALSE'
+    and data_type = 'BOOLEAN') as actual
+ , 1 as expected
+ ,'Order Filled is Boolean' as description
+);
+
+
+-- ############## add the unique ID column to the table ################
+-- reset the table
+TRUNCATE TABLE SMOOTHIES.PUBLIC.ORDERS;
+
+-- add the unique id col
+ALTER TABLE SMOOTHIES.PUBLIC.ORDERS
+ADD COLUMN ORDER_UID INTEGER 
+DEFAULT SMOOTHIES.PUBLIC.ORDER_SEQ.nextval
+CONSTRAINT ORDER_UID UNIQUE ENFORCED;
+
+SELECT *
+FROM SMOOTHIES.PUBLIC.ORDERS;
+
+
+-- ############### recreate the order table ####################
+TRUNCATE TABLE SMOOTHIES.PUBLIC.ORDERS;
+
+CREATE OR REPLACE TABLE SMOOTHIES.PUBLIC.ORDERS(
+    ORDER_UID NUMBER(38,0) DEFAULT SMOOTHIES.PUBLIC.ORDER_SEQ.NEXTVAL
+    , ORDER_FILLED BOOLEAN DEFAULT FALSE
+    , NAME_ON_ORDER VARCHAR(100)
+    , INGREDIENTS VARCHAR(200)
+    , ORDER_TS TIMESTAMP_LTZ(9) DEFAULT CURRENT_TIMESTAMP()
+    , CONSTRAINT ORDER_UID UNIQUE (ORDER_UID)
+);
+
+INSERT INTO ORDERS (NAME_ON_ORDER, INGREDIENTS)
+VALUES ('Jin', 'Water bottle, Carrot');
+
+SELECT *
+FROM ORDERS;
+
+SELECT *
+FROM PRODUCT_OPTIONS;
+
+
+
+-- grader
+select GRADER(step, (actual = expected), actual, expected, description) as graded_results from (
+ SELECT 'DABW005' as step
+ ,(select count(*) from SMOOTHIES.INFORMATION_SCHEMA.STAGES
+where stage_name like '%(Stage)') as actual
+ , 2 as expected
+ ,'There seem to be 2 SiS Apps' as description
+);
+
+
+
+-- ################# variables/ functions ###################
+-- variables
+SET mystery_bag = 'this bag is empty';
+SELECT $mystery_bag;
+
+-- functions
+CREATE FUNCTION sum_mystery_bag_vars (var1 number, var2 number, var3 number)
+    returns number AS 'select var1 + var2 + var3';
+
+SELECT sum_mystery_bag_vars(2,5);
+
+
+-- grader
+-- Set these local variables according to the instructions
+set this = -10.5;
+set that = 2;
+set the_other = 1000;
+
+-- DO NOT EDIT ANYTHING BELOW THIS LINE
+select GRADER(step, (actual = expected), actual, expected, description) as graded_results from (
+  SELECT 'DABW006' as step
+ ,( select util_db.public.sum_mystery_bag_vars($this,$that,$the_other)) as actual
+ , 991.5 as expected
+ ,'Mystery Bag Function Output' as description
+);
+
+
+-- lowercase
+SET alternating_caps_phrase = 'aLtErNaTing caPs';
+SELECT initcap($alternating_caps_phrase);
+
+CREATE FUNCTION NEUTRALIZE_WHINING (var TEXT)
+    RETURNS TEXT AS 'select INITCAP(var)';
+
+SELECT NEUTRALIZE_WHINING('aLtErNaTingPpppP ooOeF');
+
+-- grader
+select GRADER(step, (actual = expected), actual, expected, description) as graded_results from (
+ SELECT 'DABW007' as step
+ ,( select hash(neutralize_whining('bUt mOm i wAsHeD tHe dIsHes yEsTeRdAy'))) as actual
+ , -4759027801154767056 as expected
+ ,'WHINGE UDF Works' as description
+);
+
+
+-- ################# add column to get api of fruits ###################
+SELECT *
+FROM SMOOTHIES.PUBLIC.FRUIT_OPTIONS;
+
+-- ALTER TABLE SMOOTHIES.PUBLIC.FRUIT_OPTIONS
+-- ADD COLUMN SEARCH_ON VARCHAR;
+
+UPDATE SMOOTHIES.PUBLIC.FRUIT_OPTIONS
+SET SEARCH_ON = FRUIT_NAME;
+
+UPDATE SMOOTHIES.PUBLIC.FRUIT_OPTIONS
+SET SEARCH_ON = 'Blueberry'
+WHERE FRUIT_NAME = 'Blueberries';
+
+
+-- grader
+select GRADER(step, (actual = expected), actual, expected, description) as graded_results from (
+   SELECT 'DABW008' as step 
+   ,( select sum(hash_ing) from
+      (select hash(ingredients) as hash_ing
+       from smoothies.public.orders
+       where order_ts is not null 
+       and name_on_order is not null 
+       and (name_on_order = 'Kevin' and order_filled = FALSE and hash_ing = 7976616299844859825) 
+       or (name_on_order ='Divya' and order_filled = TRUE and hash_ing = -6112358379204300652)
+       or (name_on_order ='Xi' and order_filled = TRUE and hash_ing = 1016924841131818535))
+     ) as actual 
+   , 2881182761772377708 as expected 
+   ,'Followed challenge lab directions' as description
+); 
+
