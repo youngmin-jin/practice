@@ -58,10 +58,10 @@
 
 <br><br>
 ## Others
-- Transfer Appliance & Transfer Service
+- Transfer Appliance & Transfer Service <br>
   <img src="https://github.com/youngmin-jin/practice/assets/135728064/239dac5e-4129-4685-a1cc-3ef2c8bf8b98" width="500"> <br><br>
 
-- Encryption
+- Encryption <br>
   <img src="https://github.com/youngmin-jin/practice/assets/135728064/bba30855-5d73-4cbe-a56f-76c823529411" width="500"> <br><br>
   
 
