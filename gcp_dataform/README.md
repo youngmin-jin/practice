@@ -43,9 +43,9 @@
   - contain general configuration, execution schedules, schema for new tables and views 
   - e.g.,
     - sqlx file <br>
-      <image src="https://github.com/youngmin-jin/practice/assets/135728064/33556706-6807-456c-8cb6-e5fccd76fc6c" width="500">
+      <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/33556706-6807-456c-8cb6-e5fccd76fc6c" width="500"></kbd> <br>
     - dataform.json <br>
-      <image src="https://github.com/youngmin-jin/practice/assets/135728064/ea0fb1a0-9fef-4725-be4e-1e49d8933bbd" width="500">
+      <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/ea0fb1a0-9fef-4725-be4e-1e49d8933bbd" width="500"></kbd>
 
 - Definitions
   - sqlx, javascript files to define new tables and views/ additional SQL operations to run in BigQuery
@@ -61,10 +61,10 @@
 - built-in assertions: nonNull, uniqueKey, rowConditions..
 - e.g., built-in assertions
   - two assertions "uniqueKey" and "rowConditions" in source_table.sqlx <br>
-    <image src="https://github.com/youngmin-jin/practice/assets/135728064/f78db4c5-9f3a-4ba3-9531-d0765f80a29e" width="200"> <br>
-    <image src="https://github.com/youngmin-jin/practice/assets/135728064/cc970ff4-684a-4e3c-a994-f22809fa538b" width="500"> <br><br>
+    <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/f78db4c5-9f3a-4ba3-9531-d0765f80a29e" width="200"></kbd> <br><br>
+    <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/cc970ff4-684a-4e3c-a994-f22809fa538b" width="500"></kbd> <br><br>
   - if the result is not qualified to the assertion, then it would fail <br>
-    <image src="https://github.com/youngmin-jin/practice/assets/135728064/7c0d28d3-7569-40fd-82c0-adaf19825c8f" width="500"> <br>
+    <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/7c0d28d3-7569-40fd-82c0-adaf19825c8f" width="500"></kbd> <br>
 
 - e.g., manual assertions
   ```
@@ -78,6 +78,20 @@
   WHERE `<your_column>` NOT IN ('value1', 'value2', 'value3');
   ```
   -> this sqlx file itself is an assertion
+
+
+<br><br>
+## Declaration
+- define and register external data sources or objects within the Dataform
+- e.g.,
+  - declare the external data (from BigQuery) <br>
+    <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/301a1281-6463-4ea8-97fc-a456c41b0045" width="400"></kbd> <br><br>
+    <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/6d8febb3-7c3a-427b-8e17-e263e84f26df" width="400"></kbd> <br><br>
+  - use that as ref table <br>
+    <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/ca5e8aca-9862-4eec-b506-40839dd31e59" width="400"></kbd> <br>
+
+
+
 
 <br><br>
 ## Ref
