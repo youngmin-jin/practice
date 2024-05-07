@@ -88,7 +88,18 @@
     <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/301a1281-6463-4ea8-97fc-a456c41b0045" width="400"></kbd> <br><br>
     <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/6d8febb3-7c3a-427b-8e17-e263e84f26df" width="400"></kbd> <br><br>
   - use that as ref table <br>
-    <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/ca5e8aca-9862-4eec-b506-40839dd31e59" width="400"></kbd> <br>
+    <kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/ca5e8aca-9862-4eec-b506-40839dd31e59" width="400"></kbd> <br><br>
+  - join two ref tables <br>
+    ```
+    config { type: "table" }
+    select a.date
+            , a.country_iso_code_2
+            , a.airport_name
+            , c.region_geom
+    from ${ref("airport_traffic")} as a
+        join ${ref("commercial_traffic")} as c on a.country_iso_code_2 = c.country_iso_code_2
+    limit 100
+    ```
 
 
 
