@@ -1,0 +1,16 @@
+config { type: "table" }
+
+select c.mon
+        , c.country as most_confirmed_country
+        , c.sum_confirmed_cases
+        , round(c.sum_confirmed_cases / c.pop_data_2019, 4) as ratio_confirmed_cases
+        , d.country as most_deaths_country
+        , d.sum_deaths
+        , round(d.sum_deaths / d.pop_data_2019, 4) as ratio_deaths_cases
+from ${ref('01_sum_confirmed_deaths_cases')} as c
+        join ${ref('01_sum_confirmed_deaths_cases')} as d on c.mon = d.mon
+where c.sum_confirmed_cases_rank = 1
+        and d.sum_deaths_rank = 1
+
+
+
