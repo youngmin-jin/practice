@@ -1,0 +1,26 @@
+-- config {
+--     type: "declaration",
+--     database: "bigquery-public-data",
+--     schema: "covid19_ecdc",
+--     name: "covid_19_geographic_distribution_worldwide"
+-- }
+
+config {type: "table"}
+
+select *
+        , dense_rank() over(partition by mon order by sum_confirmed_cases desc) as sum_confirmed_cases_rank
+        , case when sum_deaths!= 0 then dense_rank() over(partition by mon order by sum_deaths desc) 
+                else 0
+          end as sum_deaths_rank
+from (
+        select date_trunc(date, MONTH) as mon
+                , countries_and_territories as country
+                , sum(daily_confirmed_cases) as sum_confirmed_cases
+                , sum(deaths) as sum_deaths
+                , avg(pop_data_2019) as pop_data_2019
+        from `bigquery-public-data`.covid19_ecdc.covid_19_geographic_distribution_worldwide
+        group by mon
+                , country
+        having pop_data_2019 > 0
+) t
+order by mon
