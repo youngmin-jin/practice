@@ -1,4 +1,9 @@
-config { type: "table" }
+config { 
+        type: "table" 
+        , columns: {
+                ratio_confirmed_cases: "ratio of confirmed cases compared to population"
+        } 
+}
 
 select c.mon
         , c.country as most_confirmed_country
