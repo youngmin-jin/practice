@@ -7,6 +7,9 @@
 - dependency management <br><br>
   <image src="https://github.com/youngmin-jin/practice/assets/135728064/250e3b2e-ce93-451b-a961-8f2154f8e1d1" width="500">
 
+<br><br>
+## Ref
+- https://www.youtube.com/watch?v=285HnXL9_rk
 
 <br><br>
 ## Workflow Execution Scheduling Options
@@ -92,6 +95,15 @@
 
 
 <br><br>
+## Execution
+<kbd><image src="https://github.com/youngmin-jin/practice/assets/135728064/ce0a183b-1b09-4f91-b2c6-1980263ce0f1" width="700"></kbd> <br><br>
+
+### - Cloud Composer
+
+
+
+
+<br><br>
 ## Use cases
 - join two ref tables <br>
   ```
@@ -116,9 +128,6 @@
   ```
 
 
-<br><br>
-## Ref
-- https://www.youtube.com/watch?v=285HnXL9_rk
 
 
 
