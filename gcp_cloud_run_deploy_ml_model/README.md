@@ -9,7 +9,7 @@ Ref: https://github.com/patrickloeber/ml-deployment/tree/main/google-cloud-run
 2. Write [load.py](https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/test/test.py](https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/test/load.py)https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/test/load.py, "load.py") to test if the saved model works fine with another data
    - load the saved encoder and model
 
-3. Write [main.py](https://github.com/youngmin-jin/practice/blob/main/gcp_cloud_run_deploy_ml_model/main.py), "main.py") app using Flask
+3. Write [main.py](https://github.com/youngmin-jin/practice/blob/main/gcp_cloud_run_deploy_ml_model/main.py, "main.py") app using Flask
    - load the saved encoder and model
    - use Flask app
      ```
