@@ -3,13 +3,13 @@ Ref: https://github.com/patrickloeber/ml-deployment/tree/main/google-cloud-run
 <br/><br/>
 
 ## Write Codes
-1. Write [train.py](https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/test/train.py, "train.py") code that creates ML model
+1. Write train.py code that creates ML model
    - save encoder and model
 
-2. Write [load.py](https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/test/test.py](https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/test/load.py)https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/test/load.py, "load.py") to test if the saved model works fine with another data
+2. Write load.py to test if the saved model works fine with another data
    - load the saved encoder and model
 
-3. Write [main.py](gcp_cloud_run_deploy_ml_model/main.py, "main.py") app using Flask
+3. Write main.py app using Flask
    - load the saved encoder and model
    - use Flask app
      ```
@@ -21,7 +21,7 @@ Ref: https://github.com/patrickloeber/ml-deployment/tree/main/google-cloud-run
       ...
      ```
 
-4. Write [test.py](https://github.com/youngmin-jin/practice/blob/main/deploy_ml_model_to_cloud_run/test/test.py, "test.py") to test if main.py works fine using localhost
+4. Write test.py to test if main.py works fine using localhost
    ```
     resp = requests.post("https://127.... something", files={'file':open('/home/jin_youngmin_5254/google-deploy/test/test_data.csv', 'rb')})
    ``` 
